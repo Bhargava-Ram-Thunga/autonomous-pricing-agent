@@ -27,3 +27,13 @@ changes.jsonl
 *.swp
 node_modules/
 *.tsbuildinfo
+
+# Claude Code / AI tooling
+.claude/
+
+# OS
+.DS_Store
+
+# Next.js build
+ui/.next/
+ui/out/
