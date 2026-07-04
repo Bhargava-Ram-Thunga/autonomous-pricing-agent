@@ -57,14 +57,85 @@ button {
   }
 }
 
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes point-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes graph-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-1.2%, 0, 0);
+  }
+}
+
 .login-ticker-path {
-  animation: ticker-draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation: ticker-draw 2.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.login-graph {
+  animation: graph-drift 22s ease-in-out infinite;
 }
 
 .login-glow {
-  animation: drift 14s ease-in-out infinite;
+  animation: drift 18s ease-in-out infinite, breathe 8s ease-in-out infinite;
 }
 
 .login-mark {
   animation: flicker 6s linear infinite;
+}
+
+.login-point {
+  animation: point-pulse 3.4s ease-in-out infinite;
+}
+
+.login-card {
+  animation: card-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-ticker-path,
+  .login-graph,
+  .login-glow,
+  .login-mark,
+  .login-point,
+  .login-card {
+    animation: none !important;
+  }
+  .login-ticker-path {
+    stroke-dashoffset: 0;
+  }
 }
