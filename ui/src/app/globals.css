@@ -23,3 +23,48 @@ button {
   font-family: inherit;
   font-size: inherit;
 }
+
+@keyframes ticker-draw {
+  from {
+    stroke-dashoffset: 1400;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(1.5%, -1.5%, 0);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.85;
+  }
+  96% {
+    opacity: 1;
+  }
+}
+
+.login-ticker-path {
+  animation: ticker-draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.login-glow {
+  animation: drift 14s ease-in-out infinite;
+}
+
+.login-mark {
+  animation: flicker 6s linear infinite;
+}
