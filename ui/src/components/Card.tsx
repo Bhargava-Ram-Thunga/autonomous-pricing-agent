@@ -16,6 +16,7 @@ export default function Card({ title, children, style }: Props) {
         border: "1px solid var(--color-border)",
         borderRadius: "var(--radius)",
         padding: "20px 24px",
+        boxShadow: "0 8px 30px -18px rgba(0,0,0,0.5)",
         ...style,
       }}
     >

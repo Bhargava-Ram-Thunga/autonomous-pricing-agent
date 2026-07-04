@@ -13,7 +13,8 @@ export interface SessionUser {
 }
 
 export async function getSession(): Promise<SessionUser | null> {
-  const token = cookies().get(COOKIE)?.value
+  const store = await cookies()
+  const token = store.get(COOKIE)?.value
   if (!token) return null
   try {
     const { payload } = await jwtVerify(token, SECRET)

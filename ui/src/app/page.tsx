@@ -17,7 +17,7 @@ const styles = {
     width: 32,
     height: 32,
     borderRadius: 8,
-    background: "var(--color-accent)",
+    background: "linear-gradient(135deg, var(--color-accent), var(--color-green))",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -25,6 +25,7 @@ const styles = {
     color: "#fff",
     fontSize: 16,
     flexShrink: 0,
+    boxShadow: "0 4px 14px -4px rgba(79,142,247,0.5)",
   } as const,
   main: {
     padding: "28px",
@@ -45,7 +46,7 @@ export default function Page() {
   return (
     <>
       <header style={styles.header}>
-        <div style={styles.logo}>F</div>
+        <div style={styles.logo}>P</div>
         <div>
           <h1 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2 }}>
             Pricing Agent Dashboard
