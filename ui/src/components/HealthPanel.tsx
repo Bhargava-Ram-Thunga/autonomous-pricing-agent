@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { api, type HealthResponse, type AutoloopStatus } from "@/lib/api";
-import Card from "./Card";
-import StatusBadge from "./StatusBadge";
+import { useCallback, useEffect, useState } from "react";
+import { Alert, Button, Card, Chip, Spinner } from "@heroui/react";
+import { PauseIcon, PlayIcon, RefreshCwIcon } from "lucide-react";
+
+import { api, type AutoloopStatus, type HealthResponse } from "@/lib/api";
 
 export default function HealthPanel() {
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -50,78 +51,58 @@ export default function HealthPanel() {
   };
 
   return (
-    <Card title="Agent Status">
-      {error && (
-        <p style={{ color: "var(--color-red)", marginBottom: 12, fontSize: 13 }}>
-          ⚠ {error}
-        </p>
-      )}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 20, alignItems: "center" }}>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {health ? (
-            <>
-              <StatusBadge ok={health.status === "ok"} label="API" />
-              <StatusBadge ok={health.api_logged_in} label="Portal Login" />
-              <span
-                style={{
-                  fontSize: 12,
-                  color: "var(--color-muted)",
-                  alignSelf: "center",
-                }}
-              >
-                Model: <strong style={{ color: "var(--color-text)" }}>{health.model}</strong>
-              </span>
-            </>
-          ) : (
-            <span style={{ color: "var(--color-muted)", fontSize: 13 }}>
-              {loading ? "Loading…" : "Unavailable"}
-            </span>
-          )}
-        </div>
-
-        {loop && (
-          <div style={{ display: "flex", gap: 10, alignItems: "center", marginLeft: "auto" }}>
-            <StatusBadge ok={!loop.paused} label={loop.paused ? "Autoloop paused" : "Autoloop running"} />
-            {loop.interval_sec > 0 && (
-              <span style={{ fontSize: 12, color: "var(--color-muted)" }}>
-                every {loop.interval_sec}s
-              </span>
-            )}
-            <button
-              onClick={() => void toggleLoop()}
-              disabled={toggling}
-              style={{
-                padding: "5px 14px",
-                borderRadius: 6,
-                border: "1px solid var(--color-border)",
-                background: loop.paused ? "rgba(52,211,153,0.15)" : "rgba(248,113,113,0.15)",
-                color: loop.paused ? "var(--color-green)" : "var(--color-red)",
-                fontWeight: 600,
-                fontSize: 12,
-                opacity: toggling ? 0.5 : 1,
-              }}
-            >
-              {toggling ? "…" : loop.paused ? "Resume" : "Pause"}
-            </button>
-          </div>
+    <Card>
+      <Card.Header>
+        <Card.Title>Agent Status</Card.Title>
+      </Card.Header>
+      <Card.Content>
+        {error && (
+          <Alert status="danger" className="mb-4">
+            <Alert.Content>
+              <Alert.Description>{error}</Alert.Description>
+            </Alert.Content>
+          </Alert>
         )}
+        <div className="flex flex-wrap items-center gap-5">
+          <div className="flex flex-wrap items-center gap-2">
+            {health ? (
+              <>
+                <Chip color={health.status === "ok" ? "success" : "danger"}>
+                  <Chip.Label>API</Chip.Label>
+                </Chip>
+                <Chip color={health.api_logged_in ? "success" : "danger"}>
+                  <Chip.Label>Portal Login</Chip.Label>
+                </Chip>
+                <span className="text-muted text-xs">
+                  Model: <strong className="text-foreground">{health.model}</strong>
+                </span>
+              </>
+            ) : (
+              <span className="text-muted text-sm">{loading ? "Loading…" : "Unavailable"}</span>
+            )}
+          </div>
 
-        <button
-          onClick={() => void refresh()}
-          disabled={loading}
-          style={{
-            padding: "5px 14px",
-            borderRadius: 6,
-            border: "1px solid var(--color-border)",
-            background: "transparent",
-            color: "var(--color-muted)",
-            fontSize: 12,
-            opacity: loading ? 0.5 : 1,
-          }}
-        >
-          {loading ? "…" : "↺ Refresh"}
-        </button>
-      </div>
+          {loop && (
+            <div className="ml-auto flex items-center gap-2">
+              <Chip color={loop.paused ? "default" : "success"}>
+                <Chip.Label>{loop.paused ? "Autoloop paused" : "Autoloop running"}</Chip.Label>
+              </Chip>
+              {loop.interval_sec > 0 && (
+                <span className="text-muted text-xs">every {loop.interval_sec}s</span>
+              )}
+              <Button size="sm" variant="outline" onPress={() => void toggleLoop()} isDisabled={toggling}>
+                {toggling ? <Spinner size="sm" /> : loop.paused ? <PlayIcon className="size-4" /> : <PauseIcon className="size-4" />}
+                {loop.paused ? "Resume" : "Pause"}
+              </Button>
+            </div>
+          )}
+
+          <Button size="sm" variant="ghost" onPress={() => void refresh()} isDisabled={loading}>
+            <RefreshCwIcon className={loading ? "size-4 animate-spin" : "size-4"} />
+            Refresh
+          </Button>
+        </div>
+      </Card.Content>
     </Card>
   );
 }

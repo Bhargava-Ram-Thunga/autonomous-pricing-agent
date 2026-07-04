@@ -1,117 +1,55 @@
+import { Card, Chip } from "@heroui/react";
+import { TrendingUpIcon } from "lucide-react";
+
 import HealthPanel from "@/components/HealthPanel";
 import TripsTable from "@/components/TripsTable";
 import ChatPanel from "@/components/ChatPanel";
 
 export const dynamic = "force-dynamic";
 
-const styles = {
-  header: {
-    padding: "18px 28px",
-    borderBottom: "1px solid var(--color-border)",
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-    background: "var(--color-surface)",
-  } as const,
-  logo: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    background: "linear-gradient(135deg, var(--color-accent), var(--color-green))",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: 900,
-    color: "#fff",
-    fontSize: 16,
-    flexShrink: 0,
-    boxShadow: "0 4px 14px -4px rgba(79,142,247,0.5)",
-  } as const,
-  main: {
-    padding: "28px",
-    maxWidth: 1400,
-    margin: "0 auto",
-    display: "flex",
-    flexDirection: "column" as const,
-    gap: 24,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 24,
-  } as const,
-};
+const ENDPOINTS: [string, string][] = [
+  ["GET /health", "Agent + API status"],
+  ["GET /autoloop/status", "Loop state & interval"],
+  ["POST /autoloop/pause", "Pause autoloop"],
+  ["POST /autoloop/resume", "Resume autoloop"],
+  ["GET /debug/trips", "Raw + parsed trip data"],
+  ["POST /chat", "One-shot agent query"],
+  ["POST /chat/stream", "SSE streaming query"],
+];
 
 export default function Page() {
   return (
     <>
-      <header style={styles.header}>
-        <div style={styles.logo}>P</div>
+      <header className="bg-surface flex items-center gap-3 border-b border-border px-7 py-4">
+        <div className="bg-accent text-accent-foreground flex size-8 shrink-0 items-center justify-center rounded-lg">
+          <TrendingUpIcon className="size-4" />
+        </div>
         <div>
-          <h1 style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.2 }}>
-            Pricing Agent Dashboard
-          </h1>
-          <p style={{ fontSize: 12, color: "var(--color-muted)" }}>
-            Autonomous pricing agent monitor
-          </p>
+          <h1 className="text-sm leading-tight font-semibold">Pricing Agent Dashboard</h1>
+          <p className="text-muted text-xs">Autonomous pricing agent monitor</p>
         </div>
       </header>
 
-      <main style={styles.main}>
+      <main className="mx-auto flex max-w-[1400px] flex-col gap-6 p-7">
         <HealthPanel />
         <TripsTable />
-        <div style={styles.grid}>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <ChatPanel />
-          <div
-            style={{
-              background: "var(--color-surface)",
-              border: "1px solid var(--color-border)",
-              borderRadius: "var(--radius)",
-              padding: "20px 24px",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: 13,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--color-muted)",
-                marginBottom: 16,
-              }}
-            >
-              Quick Reference
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                ["GET /health", "Agent + API status"],
-                ["GET /autoloop/status", "Loop state & interval"],
-                ["POST /autoloop/pause", "Pause autoloop"],
-                ["POST /autoloop/resume", "Resume autoloop"],
-                ["GET /debug/trips", "Raw + parsed trip data"],
-                ["POST /chat", "One-shot agent query"],
-                ["POST /chat/stream", "SSE streaming query"],
-              ].map(([endpoint, desc]) => (
-                <div key={endpoint} style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
-                  <code
-                    style={{
-                      fontSize: 11,
-                      fontFamily: "monospace",
-                      color: "var(--color-accent)",
-                      background: "rgba(79,142,247,0.08)",
-                      padding: "2px 7px",
-                      borderRadius: 4,
-                      whiteSpace: "nowrap",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {endpoint}
-                  </code>
-                  <span style={{ fontSize: 12, color: "var(--color-muted)" }}>{desc}</span>
+          <Card>
+            <Card.Header>
+              <Card.Title>Quick Reference</Card.Title>
+            </Card.Header>
+            <Card.Content className="flex flex-col gap-2.5">
+              {ENDPOINTS.map(([endpoint, desc]) => (
+                <div key={endpoint} className="flex items-baseline gap-3">
+                  <Chip size="sm" variant="soft" className="shrink-0 font-mono">
+                    <Chip.Label>{endpoint}</Chip.Label>
+                  </Chip>
+                  <span className="text-muted text-xs">{desc}</span>
                 </div>
               ))}
-            </div>
-          </div>
+            </Card.Content>
+          </Card>
         </div>
       </main>
     </>

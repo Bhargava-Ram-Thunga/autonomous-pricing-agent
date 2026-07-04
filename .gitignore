@@ -26,3 +26,4 @@ changes.jsonl
 .idea/
 *.swp
 node_modules/
+*.tsbuildinfo

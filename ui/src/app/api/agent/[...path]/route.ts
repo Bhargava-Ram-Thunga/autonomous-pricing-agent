@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { agentFetch } from '@/lib/agent-fetch'
 
-async function proxy(req: Request, { params }: { params: { path: string[] } }) {
-  const p = '/' + params.path.join('/')
+async function proxy(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path } = await params
+  const p = '/' + path.join('/')
   const url = new URL(req.url)
   const fullPath = p + (url.search || '')
   try {

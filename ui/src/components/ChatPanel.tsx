@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Card, Chip, ScrollShadow, TextArea } from "@heroui/react";
+import { SendIcon, WrenchIcon } from "lucide-react";
+
 import { api } from "@/lib/api";
-import Card from "./Card";
 
 interface Message {
   role: "user" | "agent";
@@ -37,7 +39,7 @@ export default function ChatPanel() {
     } catch (e) {
       setMessages((prev) => [
         ...prev,
-        { role: "agent", text: `⚠ Error: ${e instanceof Error ? e.message : String(e)}` },
+        { role: "agent", text: `Error: ${e instanceof Error ? e.message : String(e)}` },
       ]);
     } finally {
       setBusy(false);
@@ -52,128 +54,66 @@ export default function ChatPanel() {
   };
 
   return (
-    <Card title="Chat with Agent" style={{ display: "flex", flexDirection: "column", height: 480 }}>
-      {/* messages */}
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-          paddingRight: 4,
-          marginBottom: 16,
-        }}
-      >
-        {messages.length === 0 && (
-          <p style={{ color: "var(--color-muted)", fontSize: 13, marginTop: 8 }}>
-            Ask the pricing agent anything — e.g. "What is the occupancy on bus 1234 today?"
-          </p>
-        )}
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: m.role === "user" ? "flex-end" : "flex-start",
-            }}
-          >
-            <div
-              style={{
-                maxWidth: "78%",
-                padding: "10px 14px",
-                borderRadius: m.role === "user" ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
-                background:
-                  m.role === "user"
-                    ? "rgba(79,142,247,0.18)"
-                    : "rgba(255,255,255,0.05)",
-                border: `1px solid ${m.role === "user" ? "rgba(79,142,247,0.3)" : "var(--color-border)"}`,
-                fontSize: 13,
-                lineHeight: 1.55,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
-            >
-              {m.text}
-            </div>
-            {m.tool_calls && m.tool_calls.length > 0 && (
+    <Card className="flex h-[30rem] flex-col">
+      <Card.Header>
+        <Card.Title>Chat with Agent</Card.Title>
+      </Card.Header>
+      <Card.Content className="flex flex-1 flex-col gap-3 overflow-hidden">
+        <ScrollShadow className="flex-1" orientation="vertical">
+          <div className="flex flex-col gap-3 pr-2">
+            {messages.length === 0 && (
+              <p className="text-muted text-sm">
+                Ask the pricing agent anything — e.g. &ldquo;What is the occupancy on bus 1234
+                today?&rdquo;
+              </p>
+            )}
+            {messages.map((m, i) => (
               <div
-                style={{
-                  marginTop: 4,
-                  fontSize: 11,
-                  color: "var(--color-muted)",
-                  maxWidth: "78%",
-                }}
+                key={i}
+                className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
               >
-                🔧 tools: {m.tool_calls.map((t) => t.name).join(", ")}
+                <div
+                  className={
+                    m.role === "user"
+                      ? "bg-accent text-accent-foreground max-w-[78%] rounded-2xl rounded-br-sm px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
+                      : "bg-surface-secondary text-surface-secondary-foreground max-w-[78%] rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
+                  }
+                >
+                  {m.text}
+                </div>
+                {m.tool_calls && m.tool_calls.length > 0 && (
+                  <Chip size="sm" className="mt-1">
+                    <WrenchIcon className="size-3" />
+                    <Chip.Label>{m.tool_calls.map((t) => t.name).join(", ")}</Chip.Label>
+                  </Chip>
+                )}
+              </div>
+            ))}
+            {busy && (
+              <div className="bg-surface-secondary text-muted w-fit rounded-2xl rounded-bl-sm px-3.5 py-2.5 text-sm">
+                ···
               </div>
             )}
+            <div ref={bottomRef} />
           </div>
-        ))}
-        {busy && (
-          <div style={{ display: "flex", alignItems: "flex-start" }}>
-            <div
-              style={{
-                padding: "10px 14px",
-                borderRadius: "14px 14px 14px 4px",
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-muted)",
-                fontSize: 13,
-              }}
-            >
-              ···
-            </div>
-          </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
+        </ScrollShadow>
 
-      {/* input */}
-      <div style={{ display: "flex", gap: 8 }}>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKey}
-          placeholder="Message the agent… (Enter to send)"
-          rows={2}
-          style={{
-            flex: 1,
-            background: "var(--color-bg)",
-            border: "1px solid var(--color-border)",
-            borderRadius: 8,
-            padding: "8px 12px",
-            color: "var(--color-text)",
-            fontSize: 13,
-            resize: "none",
-            outline: "none",
-            fontFamily: "inherit",
-            lineHeight: 1.5,
-          }}
-        />
-        <button
-          onClick={() => void send()}
-          disabled={busy || !input.trim()}
-          style={{
-            padding: "0 18px",
-            borderRadius: 8,
-            border: "none",
-            background: busy || !input.trim() ? "var(--color-border)" : "var(--color-accent)",
-            color: busy || !input.trim() ? "var(--color-muted)" : "#fff",
-            fontWeight: 700,
-            fontSize: 13,
-            transition: "background 0.2s",
-          }}
-        >
-          Send
-        </button>
-      </div>
-      {sessionId && (
-        <div style={{ marginTop: 6, fontSize: 11, color: "var(--color-muted)" }}>
-          session: {sessionId}
+        <div className="flex gap-2">
+          <TextArea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={onKey}
+            placeholder="Message the agent… (Enter to send)"
+            rows={2}
+            className="flex-1 resize-none"
+          />
+          <Button onPress={() => void send()} isDisabled={busy || !input.trim()}>
+            <SendIcon className="size-4" />
+            Send
+          </Button>
         </div>
-      )}
+        {sessionId && <div className="text-muted text-xs">session: {sessionId}</div>}
+      </Card.Content>
     </Card>
   );
 }
