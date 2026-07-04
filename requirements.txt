@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+langgraph
+huggingface_hub
+python-dotenv
+pydantic
+httpx
+playwright
+pyyaml
